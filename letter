@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memories</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(to bottom,#ffffff,#f8f9fa);
+    color:#333;
+    text-align:center;
+    overflow-x:hidden;
+}
+
+/* Glitter Canvas */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
+}
+
+/* Section */
+.section{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+h1{
+    font-size:38px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:25px;
+    margin-top:15px;
+    cursor:pointer;
+    font-weight:bold;
+    background:#ffd700;
+}
+
+/* Slideshow */
+.slideshow img{
+    width:80%;
+    max-width:700px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.2);
+}
+
+/* Envelope */
+.envelope{
+    width:220px;
+    height:140px;
+    background:#ffe4e1;
+    margin-top:30px;
+    position:relative;
+    cursor:pointer;
+    border-radius:10px;
+    box-shadow:0 0 10px gold;
+}
+
+.flap{
+    position:absolute;
+    width:100%;
+    height:70px;
+    background:#ffb6c1;
+    top:0;
+    transform-origin:top;
+    transition:1s;
+}
+
+.envelope.open .flap{
+    transform:rotateX(180deg);
+}
+
+/* Letter */
+.letter{
+    display:none;
+    background:white;
+    color:black;
+    padding:30px;
+    margin-top:30px;
+    border-radius:15px;
+    max-width:800px;
+    font-family:'Dancing Script',cursive;
+    font-size:22px;
+    line-height:1.8;
+    white-space:pre-line;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+/* Acceptance Message */
+.accept-message{
+    margin-top:20px;
+    font-size:18px;
+    font-weight:bold;
+    color:#444;
+}
+
+/* Upload Box - TOP RIGHT */
+.upload-box{
+    position:fixed;
+    top:20px;
+    right:20px;
+    background:white;
+    padding:10px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.upload-box img{
+    width:100px;
+    height:100px;
+    object-fit:cover;
+    border-radius:10px;
+    margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="glitter"></canvas>
+
+<div class="section">
+<h1>Hello guy, I have something to confess</h1>
+<button onclick="scrollDown()">Click to Continue</button>
+</div>
+
+<div class="section">
+
+<div class="slideshow">
+<img id="slideImage" src="img1.jpeg">
+</div>
+
+<p>Click the envelope 💌</p>
+
+<div class="envelope" onclick="openLetter()" id="envelope">
+<div class="flap"></div>
+</div>
+
+<div class="letter" id="letter"></div>
+
+<div class="accept-message" id="acceptMessage" style="display:none;">
+If you accept this letter, insert a picture and WhatsApp me 💛
+</div>
+
+</div>
+
+<!-- Upload -->
+<div class="upload-box">
+<label>Insert Your Picture 📷</label><br>
+<input type="file" accept="image/*" onchange="loadImage(event)">
+<img id="preview">
+</div>
+
+<script>
+
+/* Smooth Scroll */
+function scrollDown(){
+    window.scrollTo({ top:window.innerHeight, behavior:"smooth" });
+}
+
+/* Local Image Slideshow */
+let images=[
+"img1.jpeg",
+"img2.jpeg",
+"img3.jpeg"
+];
+
+let index=0;
+setInterval(function(){
+    index=(index+1)%images.length;
+    document.getElementById("slideImage").src=images[index];
+},4000);
+
+/* Letter Message */
+let message=`I don't know what happened but I feel everything is falling apart.
+
+I don't know if it even hit you that I ever existed.
+
+But all I want to say —       Thank you for the beautiful memories.
+
+— Priyanka`;
+
+function openLetter(){
+    document.getElementById("envelope").classList.add("open");
+    let letter=document.getElementById("letter");
+    letter.style.display="block";
+    typeWriter(message,letter);
+    document.getElementById("acceptMessage").style.display="block";
+
+    // Hidden golden coded line
+    setTimeout(()=>{
+        let secret=document.createElement("div");
+        secret.innerText="1 reason. 5 letters. 3 words.";
+        secret.style.marginTop="20px";
+        secret.style.color="gold";
+        secret.style.fontWeight="bold";
+        secret.style.textShadow="0 0 15px gold, 0 0 25px #ffd700";
+        secret.style.fontSize="24px";
+        secret.style.opacity="1";
+        secret.style.transition="opacity 2s ease";
+
+        letter.appendChild(secret);
+
+        setTimeout(()=>{
+            secret.style.opacity="0";
+            setTimeout(()=>{ secret.remove(); },2000);
+        },30000);
+
+    },5000);
+}
+
+/* Typing Effect */
+function typeWriter(text,element){
+    let i=0;
+    element.innerHTML="";
+    function typing(){
+        if(i<text.length){
+            element.innerHTML+=text.charAt(i);
+            i++;
+            setTimeout(typing,30);
+        }
+    }
+    typing();
+}
+
+/* Safe Upload Preview */
+function loadImage(event){
+    const file=event.target.files[0];
+    if(!file) return;
+    document.getElementById("preview").src=URL.createObjectURL(file);
+}
+
+/* Golden Glitter */
+const canvas=document.getElementById("glitter");
+const ctx=canvas.getContext("2d");
+
+function resizeCanvas(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+
+let stars=[];
+for(let i=0;i<120;i++){
+    stars.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        size:Math.random()*3+1,
+        speed:Math.random()*1+0.5,
+        opacity:Math.random()
+    });
+}
+
+function drawStars(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{
+        ctx.beginPath();
+        ctx.fillStyle="rgba(255,215,0,"+s.opacity+")";
+        ctx.shadowBlur=10;
+        ctx.shadowColor="gold";
+        ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+        ctx.fill();
+        s.y+=s.speed;
+        s.opacity=Math.random();
+        if(s.y>canvas.height){
+            s.y=0;
+            s.x=Math.random()*canvas.width;
+        }
+    });
+    requestAnimationFrame(drawStars);
+}
+drawStars();
+
+</script>
+
+</body>
+</html>
